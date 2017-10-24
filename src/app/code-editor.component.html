@@ -1,4 +1,4 @@
-<div>
-  <div class="code" [innerHTML]="codeInStyleTag | safeHtml"></div>
-  <pre [innerHTML]="highlightedCode"></pre>
+<div #codeContainer class="styleEditor">
+  <div [innerHTML]="codeInStyleTag | safeHtml"></div>
+  <pre [innerHTML]="highlightedCode | safeHtml"></pre>
 </div>

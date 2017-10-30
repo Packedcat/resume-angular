@@ -29,10 +29,6 @@ html {
   min-height: 100vh;
 }
 
-li {
-  list-style: none;
-}
-
 progress ie {
   display: block;
   height: 100%;

@@ -2,7 +2,6 @@ import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild } from '
 import { ResumePanelComponent } from './resume-panel.component';
 import { HtmlEditorComponent } from './html-editor.component';
 import { CssEditorComponent } from './css-editor.component';
-import { fullResume } from './full-resume';
 import { fullCode } from './full-code';
 
 enum codeType { html, css }

@@ -1,94 +1,107 @@
 import { Component, ChangeDetectorRef, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ResumePanelComponent } from './resume-panel.component';
-import { CodeEditorComponent } from './code-editor.component';
+import { HtmlEditorComponent } from './html-editor.component';
+import { CssEditorComponent } from './css-editor.component';
 import { fullResume } from './full-resume';
 import { fullCode } from './full-code';
 
+enum codeType { html, css }
+
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <div>
+      <css-editor [cssCode]="cssCode"></css-editor>
+      <html-editor [htmlCode]="htmlCode"></html-editor>
+      <resume-panel [resume]="currentResume"></resume-panel>
+    </div>
+  `,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-  constructor(private cdr: ChangeDetectorRef) {}
-
-  @ViewChild(CodeEditorComponent)
-  private codeComponent: CodeEditorComponent;
+  @ViewChild(HtmlEditorComponent)
+  private templateContainer: HtmlEditorComponent;
+  @ViewChild(CssEditorComponent)
+  private styleContainer: CssEditorComponent;
   @ViewChild(ResumePanelComponent)
-  private resumeComponent: ResumePanelComponent;
+  private resumeContainer: ResumePanelComponent;
 
-  interval = 10;
-  enableHtml = false;
-  currentCode = '';
-  fullCode = fullCode;
-  currentResume = '';
-  fullResume = fullResume;
+  htmlCode: string;
+  cssCode: string;
+  currentCode: string;
+  currentResume: string;
+  fullCode: string[];
 
-  async makeResume(): Promise<void> {
-    await this.progressivelyShowCode(0)
-    await this.progressivelyShowResume()
-    await this.progressivelyShowCode(1)
-    await this.showHtml()
-    await this.progressivelyShowCode(2)
+  constructor(private cdr: ChangeDetectorRef) {
+    this.htmlCode = '';
+    this.cssCode = '';
+    this.currentCode = '';
+    this.currentResume = '';
+    this.fullCode = fullCode;
   }
 
-  showHtml(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.enableHtml = true
-      resolve()
-    })
+  async start(): Promise<void> {
+    await this.progressivelyShowCode(0, codeType.css);
+    await this.progressivelyShowCode(1, codeType.html, true);
+    await this.progressivelyShowCode(2, codeType.css);
+    await this.progressivelyShowCode(3, codeType.html);
+    await this.resumeContainer.nextStep();
+    await this.resumeContainer.nextStep();
+    await this.resumeContainer.nextStep();
   }
 
-  progressivelyShowCode(n: number): Promise<void> {
-    return new Promise<void>(resolve => {
-      let interval = this.interval
-      let showStyle = (async function() {
-        let code = this.fullCode[n]
-        let length = this.fullCode.filter((_, index) => index <= n).map((item) => item.length).reduce((p, c) => p + c, 0)
-        let prefixLength = length - code.length
-        if (this.currentCode.length < length) {
-          let l = this.currentCode.length - prefixLength
-          let char = code.substring(l, l + 1) || ' '
-          this.currentCode += char
-          if (code.substring(l - 1, l) === '\n') {
-            setTimeout(() => this.codeComponent.goBottom(), 0);
+  progressivelyShowCode(n: number, addType: codeType, needAppend = false, interval = 0): Promise<void> {
+    return new Promise<void> (resolve => {
+      const showCode = () => {
+        const code = this.fullCode[n];
+        const totalLength = this.fullCode.filter((_, index) => index <= n).map((item) => item.length).reduce((p, c) => p + c, 0);
+        const prefixLength = totalLength - code.length;
+        if (this.currentCode.length < totalLength) {
+          const pos = this.currentCode.length - prefixLength;
+          const char = code.substring(pos, pos + 1) || ' ';
+          this.currentCode += char;
+          switch (addType) {
+            case codeType.html:
+              this.htmlCode += char;
+              break;
+            case codeType.css:
+              this.cssCode += char;
+              break;
+            default:
+              break;
           }
-          setTimeout(showStyle, interval)
-        } else {
-          resolve()
-        }
-      }).bind(this)
-      showStyle()
-    })
-  }
-
-  progressivelyShowResume(): Promise<void> {
-    return new Promise<void>(resolve => {
-      let length = this.fullResume.length
-      let interval = this.interval
-      let showResume = () => {
-        if (this.currentResume.length < length) {
-          this.currentResume = this.fullResume.substring(0, this.currentResume.length + 1)
-          let lastChar = this.currentResume[this.currentResume.length - 1]
-          let prevChar = this.currentResume[this.currentResume.length - 2]
-          if (prevChar === '\n') {
-            setTimeout(() => this.resumeComponent.goBottom(), 0);
+          if (needAppend) {
+            this.currentResume += char;
           }
-          setTimeout(showResume, interval)
+          if (code.substring(pos - 1, pos) === '\n') {
+            switch (addType) {
+              case codeType.html:
+                setTimeout(() => this.templateContainer.goBottom());
+                if (needAppend) {
+                  setTimeout(() => this.resumeContainer.goBottom());
+                }
+                break;
+              case codeType.css:
+                setTimeout(() => this.styleContainer.goBottom());
+                break;
+              default:
+                break;
+            }
+          }
+          setTimeout(showCode, interval);
         } else {
-          resolve()
+          resolve();
         }
       }
-      showResume()
-    })
+      showCode();
+    });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.cdr.detach();
   }
 
   ngAfterViewInit(): void {
-    this.makeResume()
+    this.start();
     setTimeout(() => this.cdr.reattach());
   }
 }

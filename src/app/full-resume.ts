@@ -27,4 +27,4 @@ export const fullResume: string = `resume
 
 > 如果你喜欢这个效果，Fork [我的项目](https://github.com/jirengu-inc/animating-resume)，打造你自己的简历！
 
-`
+`;

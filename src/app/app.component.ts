@@ -39,16 +39,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async start(): Promise<void> {
-    await this.progressivelyShowCode(0, codeType.css);
+    await this.progressivelyShowCode(0, codeType.css, false, 20);
     await this.progressivelyShowCode(1, codeType.html, true);
     await this.progressivelyShowCode(2, codeType.css);
     await this.progressivelyShowCode(3, codeType.html);
     await this.resumeContainer.nextStep();
+    await this.progressivelyShowCode(4, codeType.html, false, 20);
     await this.resumeContainer.nextStep();
+    await this.resumeContainer.nextStep(1500);
+    await this.progressivelyShowCode(5, codeType.html, false, 20);
+    await this.resumeContainer.nextStep(3500);
     await this.resumeContainer.nextStep();
   }
 
-  progressivelyShowCode(n: number, addType: codeType, needAppend = false, interval = 0): Promise<void> {
+  progressivelyShowCode(n: number, addType: codeType, needAppend: boolean = false, interval: number = 0): Promise<void> {
     return new Promise<void> (resolve => {
       const showCode = () => {
         const code = this.fullCode[n];
@@ -103,4 +107,4 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.start();
     setTimeout(() => this.cdr.reattach());
   }
-}
+};

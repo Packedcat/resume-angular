@@ -5,8 +5,10 @@ import { Component, Input, ViewChild, ElementRef } from '@angular/core';
   selector: 'resume-panel',
   template: `
     <div class="resumePanel">
-      <div #resumeContainer [innerHtml]="resume | safeHtml"></div>
-      <practice-list [step]="step"></practice-list>
+      <div #resumeContainer class="pre">
+        <div [innerHtml]="resume | safeHtml"></div>
+        <practice-list [step]="step"></practice-list>
+      </div>
     </div>
   `,
 })
@@ -23,10 +25,13 @@ export class ResumePanelComponent {
   //   return this.enable ? marked(this.resume) : this.resume;
   // }
 
-  nextStep(): Promise<void> {
+  nextStep(interval: number = 2500): Promise<void> {
     return new Promise<void> (resolve => {
       this.step += 1;
-      setTimeout(resolve, 5000);
+      setTimeout(() => {
+        this.goBottom();
+      });
+      setTimeout(resolve, interval);
     });
   }
 

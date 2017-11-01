@@ -14,10 +14,10 @@ export class HtmlEditorComponent {
   @ViewChild('templateContainer') container: ElementRef;
 
   get highlightedHtmlCode(): string {
-    return Prism.highlight(this.htmlCode, Prism.languages.html)
+    return Prism.highlight(this.htmlCode, Prism.languages.html);
   }
 
   goBottom(): void {
     this.container.nativeElement.scrollTop = 100000;
   }
-}
+};

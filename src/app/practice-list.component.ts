@@ -1,52 +1,48 @@
 import { Component, Input } from '@angular/core';
-import { trigger, state, stagger, animate, style, group, query as q, transition, keyframes, sequence, animateChild } from '@angular/animations';
 
 import { PracticeDetail } from './practice-detail';
 
-const query = (s, a, o = { optional: true }) => q(s, a, o);
 const PracticeData = [
-  new PracticeDetail('SCRM系统的维护及其扩展功能开发', '2016.07-2017.04', ['AngularJS', 'Less', 'gulp'], ['提出用户体验优化计划功能引导、快速保存、气泡提示', '实现弹出层管理，统一弹出层层级管理穿透与覆盖']),
-  new PracticeDetail('电影广告投放平台的技术选型与项目搭建', '2017.01-2017.04', ['Vue.js', 'vuex', 'webpack'], ['针对前项目遇到的各种问题选择vuex做全局状态管理', '做弹出层的统一管理']),
+  new PracticeDetail('SCRM系统的维护及其扩展功能开发', '2016.07-2017.01', ['AngularJS', 'Less', 'gulp'], ['多个页面共用或派生的代码逻辑抽象为指令与服务', '制作弹出层管理指令，统一管理弹出层，解决弹出层的穿透与覆盖', '在完成收费与版本控制功能后提出用户体验优化计划并完成新用户功能引导、气泡提示等功能']),
+  new PracticeDetail('搭建一电影广告投放平台的前端', '2017.01-2017.04', ['Vue.js', 'Vuex', 'webpack'], ['针对不同登录角色切分模块代码提高加载速度', '使用vuex做全局状态管理']),
   new PracticeDetail('开发并发布了一款微信小程序', '2017.01-2017.02', [], []),
+  new PracticeDetail('微信资源信息备忘', '2017.05-2017.07', ['Python', 'ItChat', 'Vue.js', 'MySQL', 'Nginx'], ['服务器部署由Python搭建的网络服务并用ItChat登录微信', '将转发至登录微信的信息分类存储至数据库', 'Web前端管理其存储的内容', '解析发送至登录微信的指令获取网络服务'], 'https://github.com/Packedcat/know_yourself_fe', 'http://maverick-cat.me'),
+  new PracticeDetail('在线简历', '2017.10', ['Angular', 'TypeScript'], ['刚学的Angular与TypeScript做的简历'], 'https://github.com/Packedcat/resume-angular'),
 ];
-const routerTransition = trigger('routerTransition', [
-  transition('* => *', [
-    query(':enter, :leave', style({ position: 'fixed', width: '100%' })),
-    query(':enter', style({ transform: 'translateX(100%)' })),
-    sequence([
-      query(':leave', animateChild()),
-      group([
-        query(':leave', [
-          style({ transform: 'translateX(0%)' }),
-          animate('500ms cubic-bezier(.75,-0.48,.26,1.52)',
-            style({ transform: 'translateX(-100%)' }))
-        ]),
-        query(':enter', [
-          style({ transform: 'translateX(100%)' }),
-          animate('500ms cubic-bezier(.75,-0.48,.26,1.52)',
-            style({ transform: 'translateX(0%)' })),
-        ]),
-      ]),
-      query(':enter', animateChild()),
-    ])
-  ])
-]);
+
 @Component({
   selector: 'practice-list',
   template: `
-  <section>
-    <h3>微联播</h3>
-    <practice [data]="pls[0]" *ngIf="step >= 1"></practice>
-    <practice [data]="pls[1]" *ngIf="step >= 2"></practice>
-    <practice [data]="pls[2]" *ngIf="step >= 3"></practice>
+  <section *ngIf="step !== 0">
+    <h2>实习经历</h2>
+    <hr />
+    <div class="practice-list">
+      <h3>微联播</h3>
+      <practice [data]="pds[0]" *ngIf="step >= 1"></practice>
+      <practice [data]="pds[1]" *ngIf="step >= 2"></practice>
+      <practice [data]="pds[2]" *ngIf="step >= 3"></practice>
+    </div>
+  </section>
+  <section *ngIf="step >= 4">
+    <h2>个人项目</h2>
+    <hr />
+    <div class="practice-list">
+      <practice [data]="pds[3]" *ngIf="step >= 4"></practice>
+      <practice [data]="pds[4]" *ngIf="step >= 5"></practice>
+    </div>
   </section>
   `,
+  styles: [`
+    .practice-list {
+      padding: 1em;
+    }
+  `],
 })
 export class PracticeListComponent {
   @Input() step: number;
-  pls: PracticeDetail[];
+  pds: PracticeDetail[];
 
   constructor() {
-    this.pls = PracticeData;
+    this.pds = PracticeData;
   }
-}
+};

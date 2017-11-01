@@ -25,4 +25,4 @@ export class CssEditorComponent {
   goBottom(): void {
     this.container.nativeElement.scrollTop = 100000;
   }
-}
+};

@@ -1,5 +1,6 @@
 import { Component, Input, Type } from '@angular/core';
 import { trigger,state, stagger, animate, style, group, query as q, transition, keyframes, sequence, animateChild } from '@angular/animations';
+import { PracticeDetail } from './practice-detail';
 
 const query = (s, a, o = { optional: true }) => q(s, a, o);
 const practiceTransition = trigger('practiceTransition', [
@@ -25,10 +26,12 @@ class PracticeData {
   selector: 'practice',
   template: `
     <div [@practiceTransition] class="practice">
-      <h3 class="header">{{data.header}}</h3>
+      <h4 class="header">{{data.header}}</h4>
       <time *ngIf="data.time" class="time">{{data.time}}</time>
       <ul *ngIf="data.describes.length" class="describes">
         <li *ngFor="let desc of data.describes" class="describe">{{desc}}</li>
+        <li *ngIf="data.github" class="describe">GitHub源码：<a target="_blank" [href]="data?.github">{{data?.github}}</a></li>
+        <li *ngIf="data.online" class="describe">线上地址：<a target="_blank" [href]="data?.online">{{data?.online}}</a></li>
       </ul>
       <p *ngIf="data.tags.length" class="tags">
         <span *ngFor="let tag of data.tags" class="tag">{{tag}}</span>
@@ -36,9 +39,6 @@ class PracticeData {
     </div>
   `,
   styles: [`
-    .practice {
-      padding: .5em;
-    }
     .time {
       font-size: 0.8rem;
       color: #9e9e9e;
@@ -47,17 +47,18 @@ class PracticeData {
       display: inline-block;
       padding: 0 0.5em;
       margin-right: .5em;
+      margin-bottom: .5em;
       line-height: 1.5em;
       border-radius: 4px;
-      background-color: #f5f2f0;
+      background-color: #eee;
     }
     .describes {
-      margin: .5em 0;
+      margin-bottom: .5em;
       padding-left: 1.2em;
     }
   `],
   animations: [practiceTransition],
 })
 export class PracticeComponent {
-  @Input() data: object;
+  @Input() data: PracticeDetail;
 }
